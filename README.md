@@ -7,7 +7,7 @@
 - 以 plugin 形式嵌入 Things 功能，包括语义解析、Things action 等
 
 #### 软件架构
-![gilix](https://github.com/lindorof/gilix/readme.png)
+![gilix](readme.png)
 
 - AP 层可使用任何语言直接与 gilix 交互，只要在所支持的传输协议（tcp/http/ws/...）范围内；当然，需要针对 AP 需求来完成相匹配的 plugin 开发
 - AP 若使用 C/C++ 开发，则可使用所提供的 cilix_spi_ap 库来简化访问逻辑
