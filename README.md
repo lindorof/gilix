@@ -14,8 +14,13 @@
 - 由于 Things 不可避免的需要接入 C/C++ 的 lib 库，因此提供了 RDC 封装，与 cilix_rdc 平台远程交互
 - cilix_spi_ap 和 cilix_rdc 都通过 C 编写，合并在 [cilix_rdc](https://gitee.com/lindorof/cilix_rdc) 库中
 - 原则：***两个一切***
-    1. ***尽一切可能***的将复杂度放在 gilix (Go) 
-    2. ***尽一切可能***的让 [cilix_rdc](https://gitee.com/lindorof/cilix_rdc) (C) 简化
+    1. ***尽一切可能*** 的将复杂度放在 gilix (Go) 
+    2. ***尽一切可能*** 的让 [cilix_rdc](https://gitee.com/lindorof/cilix_rdc) (C) 简化
+- 另外，gilix-util 中提供了一些实用功能，包括：
+    - 同步器 syncer
+    - 打点工作器 ticker
+    - 基于 zap 包装的日志库 zapt
+    - ...
 
 #### 使用说明
 
