@@ -4,7 +4,7 @@
 基于 go 开发的「Service of Things」平台
 
 - 通过 Acceptor 模式与外部交互，支持 tcp/http/ws 等协议
-- 以 plugin 形式嵌入 Things 功能，包括语义解析、Things 功能等
+- 以 plugin 形式嵌入 Things 功能，包括语义解析、Things action 等
 
 #### 软件架构
 ![gilix](./readme.png)
@@ -13,9 +13,9 @@
 - AP 若使用 C/C++ 开发，则可使用所提供的 cilix_spi_ap 库来简化访问逻辑
 - 由于 Things 不可避免的需要接入 C/C++ 的 lib 库，因此提供了 RDC 封装，与 cilix_rdc 平台远程交互
 - cilix_spi_ap 和 cilix_rdc 都通过 C 编写，合并在 [cilix_rdc](https://gitee.com/lindorof/cilix_rdc) 库中
-- 原则：**两个一切**
-    1. **尽一切可能的将复杂度放在 gilix (Go) **
-    2. **尽一切可能的让 [cilix_rdc](https://gitee.com/lindorof/cilix_rdc) (C) 简化**
+- 原则：***两个一切***
+    1. ***尽一切可能***的将复杂度放在 gilix (Go) 
+    2. ***尽一切可能***的让 [cilix_rdc](https://gitee.com/lindorof/cilix_rdc) (C) 简化
 
 #### 使用说明
 

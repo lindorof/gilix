@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"time"
 
-	"gitee.com/lindorof/gilix/util"
+	"github.com/lindorof/gilix/util"
 )
 
 type invocation struct {

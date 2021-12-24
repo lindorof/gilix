@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"gitee.com/lindorof/gilix"
+	"github.com/lindorof/gilix"
 )
 
 const (

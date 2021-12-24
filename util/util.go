@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"gitee.com/lindorof/gilix"
+	"github.com/lindorof/gilix"
 )
 
 func ContextErr(ctx context.Context) gilix.RET {

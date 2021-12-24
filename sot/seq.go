@@ -3,8 +3,8 @@ package sot
 import (
 	"log"
 
-	"gitee.com/lindorof/gilix"
-	"gitee.com/lindorof/gilix/acp"
+	"github.com/lindorof/gilix"
+	"github.com/lindorof/gilix/acp"
 )
 
 type session struct {

@@ -1,6 +1,6 @@
 package gilix
 
-import "gitee.com/lindorof/gilix/acp"
+import "github.com/lindorof/gilix/acp"
 
 type DevCp interface {
 	PostEvt(Evt)

@@ -1,4 +1,4 @@
-module gitee.com/lindorof/gilix
+module github.com/lindorof/gilix
 
 go 1.17
 

@@ -4,7 +4,7 @@ import (
 	"container/list"
 	"time"
 
-	"gitee.com/lindorof/gilix"
+	"github.com/lindorof/gilix"
 )
 
 type device struct {

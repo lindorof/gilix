@@ -3,9 +3,9 @@ package sot
 import (
 	"context"
 
-	"gitee.com/lindorof/gilix"
-	"gitee.com/lindorof/gilix/acp"
-	"gitee.com/lindorof/gilix/util"
+	"github.com/lindorof/gilix"
+	"github.com/lindorof/gilix/acp"
+	"github.com/lindorof/gilix/util"
 )
 
 func init() {

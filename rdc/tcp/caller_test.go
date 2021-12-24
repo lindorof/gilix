@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"gitee.com/lindorof/gilix/util"
+	"github.com/lindorof/gilix/util"
 )
 
 func TestInvoke(t *testing.T) {

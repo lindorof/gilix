@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"gitee.com/lindorof/gilix"
-	"gitee.com/lindorof/gilix/util"
+	"github.com/lindorof/gilix"
+	"github.com/lindorof/gilix/util"
 )
 
 const (

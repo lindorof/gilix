@@ -1,8 +1,8 @@
 package ws
 
 import (
-	"gitee.com/lindorof/gilix/acp"
-	"gitee.com/lindorof/gilix/util"
+	"github.com/lindorof/gilix/acp"
+	"github.com/lindorof/gilix/util"
 
 	"context"
 	"log"

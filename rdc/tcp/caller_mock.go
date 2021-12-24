@@ -6,7 +6,7 @@ import (
 	"log"
 	"net"
 
-	"gitee.com/lindorof/gilix/util"
+	"github.com/lindorof/gilix/util"
 )
 
 type tcpServerMock struct {

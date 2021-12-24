@@ -1,6 +1,6 @@
 package sot
 
-import "gitee.com/lindorof/gilix"
+import "github.com/lindorof/gilix"
 
 type eRcvHsId struct {
 	rcv *session
