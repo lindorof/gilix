@@ -127,3 +127,7 @@ func (syncer *Syncer) Sync(fSync func(), fBreak func()) {
 		}
 	}
 }
+
+func (syncer *Syncer) Ctx() context.Context {
+	return syncer.ctx
+}

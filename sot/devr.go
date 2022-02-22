@@ -29,6 +29,10 @@ func (dr *devRep) matchDev(phy string) <-chan *device {
 
 func (dr *devRep) loopSync() {
 	for m := range dr.matcher {
+		if m == nil {
+			break
+		}
+
 		if dev, ok := dr.devm[m.phy]; ok {
 			m.ret <- dev
 		} else {
@@ -40,5 +44,5 @@ func (dr *devRep) loopSync() {
 }
 
 func (dr *devRep) loopBreak() {
-	close(dr.matcher)
+	dr.matcher <- nil
 }
