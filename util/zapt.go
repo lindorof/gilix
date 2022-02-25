@@ -27,10 +27,10 @@ type Zapt struct {
 	log *zap.SugaredLogger
 }
 
-func CreateZapt(path string, mod string, file string, xday ZaptDayMode, purge int, level string) *Zapt {
+func CreateZapt(path string, mod string, file string, xday string, purge int, level string) *Zapt {
 	core := zapcore.NewCore(
 		encoder(),
-		zapcore.AddSync(writer(path, mod, file, xday, purge)),
+		zapcore.AddSync(writer(path, mod, file, str2xday(xday), purge)),
 		str2lvl(level))
 	zapt := &Zapt{zap.New(core,
 		zap.AddCaller(),
@@ -143,6 +143,18 @@ func ecfunc(ec zapcore.EntryCaller) string {
 		fn = fn[i+1:]
 	}
 	return fn
+}
+
+func str2xday(s string) ZaptDayMode {
+	s = strings.ToUpper(s)
+	switch s {
+	case "FILESOFDAY":
+		return FilesOfDay
+	case "DIRSOFDAY":
+		return DirsOfDay
+	default:
+		return FilesOfDay
+	}
 }
 
 func str2lvl(s string) zapcore.Level {

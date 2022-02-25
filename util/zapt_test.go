@@ -6,17 +6,17 @@ import (
 )
 
 func TestFilesOfDay(t *testing.T) {
-	zapt := zapt(FilesOfDay)
+	zapt := zapt("FilesOfDay")
 	logOne(zapt)
 }
 
 func TestDirsOfDay(t *testing.T) {
-	zapt := zapt(DirsOfDay)
+	zapt := zapt("DirsOfDay")
 	logOne(zapt)
 }
 
 func BenchmarkFilesOfDay(b *testing.B) {
-	zapt := zapt(FilesOfDay)
+	zapt := zapt("FilesOfDay")
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -25,7 +25,7 @@ func BenchmarkFilesOfDay(b *testing.B) {
 }
 
 func BenchmarkDirsOfDay(b *testing.B) {
-	zapt := zapt(DirsOfDay)
+	zapt := zapt("DirsOfDay")
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -38,7 +38,7 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-func zapt(xday ZaptDayMode) *Zapt {
+func zapt(xday string) *Zapt {
 	return CreateZapt("./gilix_trace", "util/zapt", "zapt", xday, 2, "DEBUG")
 }
 
