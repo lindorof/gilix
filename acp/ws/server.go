@@ -63,8 +63,8 @@ func (srv *wsServer) LoopSync() {
 	err := srv.server.ListenAndServe()
 	log.Printf("[%p] server.ListenAndServe end [%v]\n", srv, err)
 
-	srv.cnnSyncer.WaitRelease(util.SYNCER_WAIT_MODE_CANCEL)
-	log.Printf("[%p] srv.cnnSyncer.SYNCER_WAIT_MODE_CANCEL return\n", srv)
+	srv.cnnSyncer.WaitRelease(util.SyncerWaitModeCancel)
+	log.Printf("[%p] srv.cnnSyncer.SyncerWaitModeCancel return\n", srv)
 }
 
 func (srv *wsServer) LoopBreak() {
@@ -119,5 +119,5 @@ func (srv *wsServer) wsHandler(w http.ResponseWriter, r *http.Request) {
 	rwSyncer.Async(freader, func() { cnn.Close() })
 	rwSyncer.Async(fwriter, func() { chw <- nil })
 
-	rwSyncer.WaitRelease(util.SYNCER_WAIT_MODE_ANY)
+	rwSyncer.WaitRelease(util.SyncerWaitModeAny)
 }

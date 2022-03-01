@@ -140,7 +140,7 @@ func setup() *util.Syncer {
 }
 
 func teardown(syncer *util.Syncer) {
-	syncer.WaitRelease(util.SYNCER_WAIT_MODE_CANCEL)
+	syncer.WaitRelease(util.SyncerWaitModeCancel)
 }
 
 func wscnn() *websocket.Conn {

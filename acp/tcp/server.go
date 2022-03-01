@@ -57,8 +57,8 @@ func (srv *tcpServer) LoopSync() {
 		go srv.tcpHandler(cnn)
 	}
 
-	srv.cnnSyncer.WaitRelease(util.SYNCER_WAIT_MODE_CANCEL)
-	log.Printf("[%p] srv.cnnSyncer.SYNCER_WAIT_MODE_CANCEL return\n", srv)
+	srv.cnnSyncer.WaitRelease(util.SyncerWaitModeCancel)
+	log.Printf("[%p] srv.cnnSyncer.SyncerWaitModeCancel return\n", srv)
 }
 
 func (srv *tcpServer) LoopBreak() {
@@ -105,5 +105,5 @@ func (srv *tcpServer) tcpHandler(cnn net.Conn) {
 	rwSyncer.Async(freader, func() { cnn.Close() })
 	rwSyncer.Async(fwriter, func() { chw <- nil })
 
-	rwSyncer.WaitRelease(util.SYNCER_WAIT_MODE_ANY)
+	rwSyncer.WaitRelease(util.SyncerWaitModeAny)
 }

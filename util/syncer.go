@@ -8,12 +8,12 @@ import (
 	"syscall"
 )
 
-type SYNCER_WAIT_MODE int
+type SyncerWaitMode int
 
 const (
-	SYNCER_WAIT_MODE_CANCEL = 1
-	SYNCER_WAIT_MODE_IDLE   = 2
-	SYNCER_WAIT_MODE_ANY    = 3
+	SyncerWaitModeCancel = 1
+	SyncerWaitModeIdle   = 2
+	SyncerWaitModeAny    = 3
 )
 
 type Syncer struct {
@@ -73,7 +73,7 @@ func CreateSyncerGroup(ctx context.Context, syncers ...**Syncer) {
 	}
 }
 
-func WaitReleaseSyncerGroup(act SYNCER_WAIT_MODE, syncers ...*Syncer) {
+func WaitReleaseSyncerGroup(act SyncerWaitMode, syncers ...*Syncer) {
 	for _, syncer := range syncers {
 		syncer.WaitRelease(act)
 	}
@@ -83,13 +83,13 @@ func (syncer *Syncer) DeriveSyncer() *Syncer {
 	return newSyncer(syncer.ctx, syncer, nil)
 }
 
-func (syncer *Syncer) WaitRelease(act SYNCER_WAIT_MODE) {
+func (syncer *Syncer) WaitRelease(act SyncerWaitMode) {
 	switch act {
-	case SYNCER_WAIT_MODE_CANCEL:
+	case SyncerWaitModeCancel:
 		syncer.ctxc()
-	case SYNCER_WAIT_MODE_IDLE:
+	case SyncerWaitModeIdle:
 		<-syncer.ctx.Done()
-	case SYNCER_WAIT_MODE_ANY:
+	case SyncerWaitModeAny:
 		<-syncer.onced
 		syncer.ctxc()
 	default:

@@ -101,7 +101,7 @@ func setup() *util.Syncer {
 }
 
 func teardown(mockSyncer *util.Syncer) {
-	mockSyncer.WaitRelease(util.SYNCER_WAIT_MODE_CANCEL)
+	mockSyncer.WaitRelease(util.SyncerWaitModeCancel)
 }
 
 func caller() *tcpCaller {

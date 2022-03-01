@@ -68,8 +68,8 @@ func (srv *tcpServerMock) loopSync() {
 		go srv.tcpHandler(cnn)
 	}
 
-	srv.cnnSyncer.WaitRelease(util.SYNCER_WAIT_MODE_CANCEL)
-	srv.mockLogf("srv.cnnSyncer.SYNCER_WAIT_MODE_CANCEL return\n")
+	srv.cnnSyncer.WaitRelease(util.SyncerWaitModeCancel)
+	srv.mockLogf("srv.cnnSyncer.SyncerWaitModeCancel return\n")
 }
 
 func (srv *tcpServerMock) loopBreak() {
@@ -118,7 +118,7 @@ func (srv *tcpServerMock) tcpHandler(cnn net.Conn) {
 	rwSyncer.Async(freader, func() { cnn.Close() })
 	rwSyncer.Async(fwriter, func() { chw <- nil })
 
-	rwSyncer.WaitRelease(util.SYNCER_WAIT_MODE_ANY)
+	rwSyncer.WaitRelease(util.SyncerWaitModeAny)
 
 	srv.mockLogf("[%p] tcpHandler Exit\n", cnn)
 }

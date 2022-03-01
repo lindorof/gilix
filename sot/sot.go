@@ -28,7 +28,7 @@ type sotEngine struct {
 func (se *sotEngine) SotLoopSync() {
 	se.devrSyncer.Async(se.devr.loopSync, se.devr.loopBreak)
 	<-se.breaker
-	util.WaitReleaseSyncerGroup(util.SYNCER_WAIT_MODE_CANCEL, se.acpSyncer, se.devrSyncer, se.devsSyncer)
+	util.WaitReleaseSyncerGroup(util.SyncerWaitModeCancel, se.acpSyncer, se.devrSyncer, se.devsSyncer)
 }
 
 func (se *sotEngine) SotLoopBreak() {

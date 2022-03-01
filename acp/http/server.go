@@ -56,8 +56,8 @@ func (srv *httpServer) LoopSync() {
 	err := srv.server.ListenAndServe()
 	log.Printf("[%p] server.ListenAndServe end [%v]\n", srv, err)
 
-	srv.cnnSyncer.WaitRelease(util.SYNCER_WAIT_MODE_CANCEL)
-	log.Printf("[%p] srv.cnnSyncer.SYNCER_WAIT_MODE_CANCEL return\n", srv)
+	srv.cnnSyncer.WaitRelease(util.SyncerWaitModeCancel)
+	log.Printf("[%p] srv.cnnSyncer.SyncerWaitModeCancel return\n", srv)
 }
 
 func (srv *httpServer) LoopBreak() {
