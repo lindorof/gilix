@@ -81,16 +81,17 @@ func (d *device) invokeMeta(req *sotReq) {
 	}
 }
 
-func (d *device) invoke_open(req *sotReq) {
-}
-
-func (d *device) invoke_close(req *sotReq) {
-}
-
 func (d *device) invoke_reg(req *sotReq) {
 }
 
 func (d *device) invoke_dereg(req *sotReq) {
+}
+
+func (d *device) invoke_open(req *sotReq) {
+}
+
+func (d *device) invoke_close(req *sotReq) {
+	d.unlock(req.seq)
 }
 
 func (d *device) invoke_unlock(req *sotReq) {
@@ -198,13 +199,3 @@ func (d *device) lock(req *sotReq) bool {
 
 	return true
 }
-
-/*
-1，CLOSE之前，要tryUnlock
-6，tryLock的时候，考虑如何同时控制好curlck和curlcki
-3，在invoke_req/dereg的时候调用Usr接口
-//2，SOT_REQ_TYPE_SESSION_CLEAN 的时候要tryUnlock
-//3，seq要有HS，与DEV和USR的初始化时机一致
-//4，增加curlcki
-//5，tryUnlock里同时控制好curlck和curlcki
-*/
