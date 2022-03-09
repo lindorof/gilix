@@ -85,31 +85,33 @@ func (syncer *Syncer) DeriveSyncer() *Syncer {
 
 func (syncer *Syncer) WaitRelease(act SyncerWaitMode) {
 	switch act {
-	case SyncerWaitModeCancel:
-		syncer.ctxc()
-	case SyncerWaitModeIdle:
-		<-syncer.ctx.Done()
 	case SyncerWaitModeAny:
 		<-syncer.onced
 		syncer.ctxc()
-	default:
+	case SyncerWaitModeCancel:
+		syncer.ctxc()
+	case SyncerWaitModeIdle:
 	}
-
 	syncer.wg.Wait()
-	if syncer.ctxs != nil {
-		syncer.ctxs()
-	}
+
+	syncer.fini()
 }
 
 func (syncer *Syncer) Async(fSync func(), fBreak func()) {
 	syncer.increase()
 	go func() {
-		syncer.Sync(fSync, fBreak)
+		syncer.sync(fSync, fBreak)
 		syncer.decrease()
 	}()
 }
 
 func (syncer *Syncer) Sync(fSync func(), fBreak func()) {
+	syncer.sync(fSync, fBreak)
+
+	syncer.fini()
+}
+
+func (syncer *Syncer) sync(fSync func(), fBreak func()) {
 	done := make(chan bool, 1)
 	go func() {
 		fSync()
@@ -125,6 +127,13 @@ func (syncer *Syncer) Sync(fSync func(), fBreak func()) {
 			<-done
 			return
 		}
+	}
+}
+
+func (syncer *Syncer) fini() {
+	syncer.ctxc()
+	if syncer.ctxs != nil {
+		syncer.ctxs()
 	}
 }
 

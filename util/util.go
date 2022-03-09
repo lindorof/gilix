@@ -3,12 +3,11 @@ package util
 import (
 	"context"
 	"strings"
-	"time"
 
 	"github.com/lindorof/gilix"
 )
 
-func ContextErr(ctx context.Context) gilix.RET {
+func ContextRet(ctx context.Context) gilix.RET {
 	if ctx == nil {
 		return gilix.RET_SUCCESS
 	}
@@ -25,21 +24,4 @@ func ContextErr(ctx context.Context) gilix.RET {
 	}
 
 	return gilix.RET_CANCELLED
-}
-
-func TickWorker(ctx context.Context, d time.Duration, fworker func() (quit bool), fdone func(ctxErr gilix.RET)) {
-	ticker := time.NewTicker(d)
-LOOP:
-	for {
-		select {
-		case <-ctx.Done():
-			fdone(ContextErr(ctx))
-			break LOOP
-		case <-ticker.C:
-			if fworker() {
-				break LOOP
-			}
-		}
-	}
-	ticker.Stop()
 }

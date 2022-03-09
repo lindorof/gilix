@@ -98,7 +98,7 @@ func (d *device) invoke_unlock(req *sotReq) {
 }
 
 func (d *device) invoke_lock(req *sotReq) {
-	if req.meta.ret = util.ContextErr(req.ctx); req.meta.ret != gilix.RET_SUCCESS {
+	if req.meta.ret = util.ContextRet(req.ctx); req.meta.ret != gilix.RET_SUCCESS {
 		return
 	}
 	if d.curlck == req.seq {
@@ -111,12 +111,15 @@ func (d *device) invoke_lock(req *sotReq) {
 
 	tried := false
 	util.TickWorker(req.ctx, time.Millisecond*50,
-		func() bool {
+		func() util.TickWorkerMode {
 			if !tried {
 				d.dev.OnLockTry()
 				tried = true
 			}
-			return d.lock(req)
+			if d.lock(req) {
+				return util.TickWorkerModeQuit
+			}
+			return util.TickWorkerModeNextTick
 		},
 		func(ctxErr gilix.RET) {
 			req.meta.ret = ctxErr
@@ -124,7 +127,7 @@ func (d *device) invoke_lock(req *sotReq) {
 }
 
 func (d *device) invoke_inf(req *sotReq, cee gilix.Callee, pci int) {
-	if req.meta.ret = util.ContextErr(req.ctx); req.meta.ret != gilix.RET_SUCCESS {
+	if req.meta.ret = util.ContextRet(req.ctx); req.meta.ret != gilix.RET_SUCCESS {
 		return
 	}
 	if pci >= 0 && pci < len(d.pollc) {
@@ -140,7 +143,7 @@ func (d *device) invoke_inf(req *sotReq, cee gilix.Callee, pci int) {
 }
 
 func (d *device) invoke_cmd(req *sotReq, cee gilix.Callee, chk bool, chg bool) {
-	if req.meta.ret = util.ContextErr(req.ctx); req.meta.ret != gilix.RET_SUCCESS {
+	if req.meta.ret = util.ContextRet(req.ctx); req.meta.ret != gilix.RET_SUCCESS {
 		return
 	}
 	if d.curlck != nil && d.curlck != req.seq {
