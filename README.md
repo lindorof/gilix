@@ -26,17 +26,19 @@
 
 ### SOT
 
-1. import ```"github.com/lindorof/gilix"```
+1. ```import "github.com/lindorof/gilix"``` 
 
 2. implement interfaces of cbs.go , such as ```Msg``` , ```Dev``` , ```Xcbs``` ...
 
-3. start the sot loop 
+3. ```import _ "github.com/lindorof/gilix/sot"``` to Initialize ```Xcps``` automatically
+
+4. start the sot loop 
 
     ```go
     gilix.Xcps.SotLoopSync()
     ```
 
-4. create acceptor as needed 
+5. create acceptor as needed 
 
     ```go
     // ws
@@ -52,19 +54,19 @@
     acceptor := http.CreateServer(para)
     ```
 
-5. submit acceptors to sot
+6. submit acceptors to sot
 
     ```go
     gilix.Xcps.SubmitAcp(acceptor)
     ```
 
-6. stop the sot loop on exit
+7. stop the sot loop on exit
 
     ```go
     gilix.Xcps.SotLoopBreak()
     ```
 
-7. for simplicity, recommend to use syncer
+8. for simplicity, recommend to use syncer
 
     ```go
     import "github.com/lindorof/gilix/util"
