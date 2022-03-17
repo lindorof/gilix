@@ -9,9 +9,18 @@ import (
 type ProctCb func(*ProctCmd)
 
 type ProctCmd struct {
+	N string
+	I int
 	C *exec.Cmd
 	E error
 	f ProctCb
+}
+
+func (cmd *ProctCmd) WithPid() *ProctCmd {
+	if cmd.C != nil && cmd.C.Process != nil {
+		cmd.I = cmd.C.Process.Pid
+	}
+	return cmd
 }
 
 type Proct struct {
@@ -45,15 +54,17 @@ func NewProct(ctx context.Context) *Proct {
 	return proct
 }
 
-func (p *Proct) AddCmd(f ProctCb, path string, args ...string) {
+func (p *Proct) AddCmd(n string, f ProctCb, path string, args ...string) {
 	cmd := &ProctCmd{
+		N: n,
+		I: 0,
 		C: exec.CommandContext(p.ctx, path, args...),
 		E: nil,
 		f: f,
 	}
 
 	if cmd.E = cmd.C.Start(); cmd.E != nil {
-		p.cbs <- cmd
+		p.cbs <- cmd.WithPid()
 		return
 	}
 
@@ -61,7 +72,7 @@ func (p *Proct) AddCmd(f ProctCb, path string, args ...string) {
 
 	go func() {
 		cmd.E = cmd.C.Wait()
-		p.cbs <- cmd
+		p.cbs <- cmd.WithPid()
 
 		p.wg.Done()
 	}()

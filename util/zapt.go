@@ -34,7 +34,8 @@ func CreateZapt(path string, mod string, file string, xday string, purge int, le
 		str2lvl(level))
 	zapt := &Zapt{zap.New(core,
 		zap.AddCaller(),
-		zap.AddCallerSkip(1)).Sugar()}
+		zap.AddCallerSkip(1),
+		zap.AddStacktrace(zapcore.DPanicLevel)).Sugar()}
 
 	zapt.log.Infof("================================")
 	zapt.log.Infof(filepath.Join(mod, file))
@@ -74,14 +75,17 @@ func (zapt *Zapt) Fatalf(template string, args ...interface{}) {
 func writer(path string, mod string, file string, xday ZaptDayMode, purge int) io.Writer {
 	lp := ""
 	rp := ""
+	fp := ""
 	tm := time.Now()
 
 	if xday == DirsOfDay {
-		lp = filepath.Join(path, fmt.Sprintf("%04d%02d%02d", tm.Year(), tm.Month(), tm.Day()), mod)
+		lp = filepath.Join(path, fmt.Sprintf("%04d%02d%02d", tm.Year(), tm.Month(), tm.Day()))
 		rp = path
+		fp = mod2file(mod, file)
 	} else {
 		lp = filepath.Join(path, mod)
 		rp = lp
+		fp = file
 	}
 
 	er := os.MkdirAll(lp, 0744)
@@ -90,13 +94,13 @@ func writer(path string, mod string, file string, xday ZaptDayMode, purge int) i
 	}
 
 	wt, er := os.OpenFile(
-		filepath.Join(lp, fmt.Sprintf("%s-%04d%02d%02d.log", file, tm.Year(), tm.Month(), tm.Day())),
+		filepath.Join(lp, fmt.Sprintf("%s-%04d%02d%02d.log", fp, tm.Year(), tm.Month(), tm.Day())),
 		os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
 	if er != nil {
 		panic(er)
 	}
 
-	rotate(rp, file, xday, purge)
+	rotate(rp, fp, xday, purge)
 	return wt
 }
 
@@ -208,4 +212,10 @@ func rotate(path string, file string, xday ZaptDayMode, purge int) {
 			os.RemoveAll(filepath.Join(path, a.Name()))
 		}
 	}
+}
+
+func mod2file(mod string, file string) string {
+	mod = strings.ReplaceAll(mod, "/", "-")
+	mod = strings.ReplaceAll(mod, "\\", "-")
+	return mod + "--" + file
 }

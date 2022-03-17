@@ -2,6 +2,7 @@ package util
 
 import (
 	"context"
+	"fmt"
 	"testing"
 )
 
@@ -20,8 +21,9 @@ func TestProct(t *testing.T) {
 	proct := NewProct(syncer.Ctx())
 
 	for _, c := range cases {
-		proct.AddCmd(func(cmd *ProctCmd) {
-			t.Logf("%s-%v-[%d][%v]", c.path, c.args, cmd.C.Process.Pid, cmd.E)
+		n := fmt.Sprintf("%s-%v", c.path, c.args)
+		proct.AddCmd(n, func(cmd *ProctCmd) {
+			t.Logf("%s-[%d][%v]", cmd.N, cmd.I, cmd.E)
 		}, c.path, c.args...)
 	}
 
