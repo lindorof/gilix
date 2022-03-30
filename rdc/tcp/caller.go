@@ -2,8 +2,10 @@ package tcp
 
 import (
 	"encoding/json"
+	"fmt"
 	"net"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/lindorof/gilix/util"
@@ -25,6 +27,8 @@ type tcpCaller struct {
 
 	addr   string
 	dialdt time.Duration
+
+	zapt *util.Zapt
 }
 
 func CreateCaller(addr string, dialdt time.Duration) *tcpCaller {
@@ -35,6 +39,10 @@ func CreateCaller(addr string, dialdt time.Duration) *tcpCaller {
 		addr:   addr,
 		dialdt: dialdt,
 	}
+
+	mod := fmt.Sprintf("gilix/rdctcp-%s", strings.ReplaceAll(addr, ":", "-"))
+	caller.zapt = util.ZaptByCfg(mod, "tcpCaller")
+	caller.zapt.Infof("[%p] CreateCaller [%s][dialdt:%d]", caller, addr, dialdt)
 
 	go caller.loop()
 	return caller
@@ -58,8 +66,10 @@ func (caller *tcpCaller) Invoke(fun string, in interface{}, out interface{}) (in
 }
 
 func (caller *tcpCaller) Fini() {
+	caller.zapt.Infof("[%p] caller.Fini begin", caller)
 	caller.ivks <- nil
 	<-caller.fini
+	caller.zapt.Infof("[%p] caller.Fini end", caller)
 }
 
 func (caller *tcpCaller) loop() {
@@ -68,6 +78,7 @@ func (caller *tcpCaller) loop() {
 
 	for ivk := range caller.ivks {
 		if ivk == nil {
+			caller.zapt.Infof("[%p] range caller.ivks : nil to exit", caller)
 			break
 		}
 		caller.invoke(ivk, sys, cerr)
@@ -86,31 +97,41 @@ func (caller *tcpCaller) invoke(ivk *invocation, sys *util.Sysrw, cerr error) {
 
 	ivk.err = cerr
 	if ivk.err != nil {
+		caller.zapt.Errorf("[%p] connect err : %v", caller, ivk.err)
 		return
 	}
 
 	data, ivk.err = json.MarshalIndent(ivk.in, "", "  ")
 	if ivk.err != nil {
+		caller.zapt.Errorf("[%p] json.MarshalIndent ivk.in err : %v", caller, ivk.err)
 		return
 	}
 
+	caller.zapt.Debugf("[%p] json.MarshalIndent ivk.in : %s", caller, string(data))
+
 	ivk.err = sys.Write(ivk.fun, data)
 	if ivk.err != nil {
+		caller.zapt.Errorf("[%p] sys.Write err : %v", caller, ivk.err)
 		return
 	}
 
 	rets, data, ivk.err = sys.Read()
 	if ivk.err != nil {
+		caller.zapt.Errorf("[%p] sys.Read err : %v", caller, ivk.err)
 		return
 	}
 
+	caller.zapt.Debugf("[%p] sys.Read : [%s]%s", caller, rets, string(data))
+
 	ivk.ret, ivk.err = strconv.ParseInt(rets, 10, 0)
 	if ivk.err != nil {
+		caller.zapt.Errorf("[%p] strconv.ParseInt rets err : %v", caller, ivk.err)
 		return
 	}
 
 	ivk.err = json.Unmarshal(data, ivk.out)
 	if ivk.err != nil {
+		caller.zapt.Errorf("[%p] json.Unmarshal ivk.out err : %v", caller, ivk.err)
 		return
 	}
 }

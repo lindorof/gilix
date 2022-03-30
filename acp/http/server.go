@@ -3,9 +3,10 @@ package http
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"io"
-	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/lindorof/gilix/acp"
@@ -19,6 +20,7 @@ type httpServer struct {
 	handler *http.ServeMux
 	server  *http.Server
 
+	zapt    *util.Zapt
 	seqHook acp.SeqHook
 }
 
@@ -43,7 +45,10 @@ func CreateServer(sot interface{}, addr string, idlet time.Duration, url ...stri
 		IdleTimeout: idlet,
 	}
 
-	log.Printf("[%p] CreateServer\n", srv)
+	mod := fmt.Sprintf("gilix/acphttp-%s", strings.ReplaceAll(addr, ":", "-"))
+	srv.zapt = util.ZaptByCfg(mod, "httpServer")
+	srv.zapt.Infof("[%p] CreateServer [%s][idlet:%d]", srv, addr, idlet)
+
 	return srv
 }
 
@@ -52,18 +57,18 @@ func (srv *httpServer) SetSeqHook(sh acp.SeqHook) {
 }
 
 func (srv *httpServer) LoopSync() {
-	log.Printf("[%p] server.ListenAndServe begin\n", srv)
+	srv.zapt.Infof("[%p] server.ListenAndServe begin", srv)
 	err := srv.server.ListenAndServe()
-	log.Printf("[%p] server.ListenAndServe end [%v]\n", srv, err)
+	srv.zapt.Infof("[%p] server.ListenAndServe end [%v]", srv, err)
 
 	srv.cnnSyncer.WaitRelease(util.SyncerWaitModeCancel)
-	log.Printf("[%p] srv.cnnSyncer.SyncerWaitModeCancel return\n", srv)
+	srv.zapt.Infof("[%p] srv.cnnSyncer.SyncerWaitModeCancel end", srv)
 }
 
 func (srv *httpServer) LoopBreak() {
-	log.Printf("[%p] server.Shutdown begin\n", srv)
+	srv.zapt.Infof("[%p] server.Shutdown begin", srv)
 	err := srv.server.Shutdown(context.Background())
-	log.Printf("[%p] server.Shutdown end [%v]\n", srv, err)
+	srv.zapt.Infof("[%p] server.Shutdown end [%v]", srv, err)
 }
 
 func (srv *httpServer) httpHandler(w http.ResponseWriter, r *http.Request) {
@@ -74,19 +79,20 @@ func (srv *httpServer) httpHandler(w http.ResponseWriter, r *http.Request) {
 	msg := bytes.NewBuffer(make([]byte, 1024*10))
 	_, err := io.Copy(msg, r.Body)
 	if err != nil {
-		log.Printf("[%p] io.Copy(req.body) : %s\n", srv, err.Error())
+		srv.zapt.Errorf("[%p] io.Copy(req.body) err : %s", srv, err.Error())
 		return
 	}
+	srv.zapt.Debugf("[%p] io.Copy(req.body) : %s", srv, string(msg.Bytes()))
 
 	seq.Putr(msg.Bytes())
 	srv.cnnSyncer.Sync(func() {
 		msg, ok := <-chw
 		if !ok || msg == nil {
-			log.Printf("[%p] chw.PeekMessage : nil\n", srv)
+			srv.zapt.Infof("[%p] chw.PeekMessage : nil to exit", srv)
 			return
 		}
 		if _, err := w.Write(msg); err != nil {
-			log.Printf("[%p] resp.Write : %s\n", srv, err.Error())
+			srv.zapt.Errorf("[%p] resp.Write err : %s", srv, err.Error())
 		}
 	}, func() { chw <- nil })
 }

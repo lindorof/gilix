@@ -14,6 +14,8 @@ import (
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+
+	"github.com/lindorof/gilix"
 )
 
 type ZaptDayMode int
@@ -25,6 +27,11 @@ const (
 
 type Zapt struct {
 	log *zap.SugaredLogger
+}
+
+func ZaptByCfg(mod string, file string) *Zapt {
+	path, mode, purge, lelvel := gilix.CBS.ZaptCfg()
+	return CreateZapt(path, mod, file, mode, purge, lelvel)
 }
 
 func CreateZapt(path string, mod string, file string, xday string, purge int, level string) *Zapt {

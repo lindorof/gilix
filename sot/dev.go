@@ -2,10 +2,12 @@ package sot
 
 import (
 	"container/list"
+	"fmt"
 	"sync"
 	"time"
 
 	"github.com/lindorof/gilix"
+	"github.com/lindorof/gilix/util"
 )
 
 type device struct {
@@ -15,6 +17,8 @@ type device struct {
 	seqs  map[*session]bool
 	tasks *list.List
 	pollb bool
+
+	zapt *util.Zapt
 
 	dev   gilix.Dev
 	polli int
@@ -37,6 +41,9 @@ func createDev(se *sotEngine, phy string) *device {
 		pollb: true,
 	}
 
+	mod := fmt.Sprintf("gilix/sotDev-%s", phy)
+	d.zapt = util.ZaptByCfg(mod, phy)
+
 	se.devsSyncer.Async(d.loopSync, func() { d.reqs <- nil })
 	return d
 }
@@ -46,6 +53,8 @@ func (d *device) loopSync() {
 	d.polli = d.dev.PollInterval()
 	d.polls = d.dev.PollFuncs()
 	d.pollc = d.poll()
+
+	d.zapt.Infof("dev=%p , polli=%d", d.dev, d.polli)
 
 	var ticker *time.Ticker = nil
 	var pollt <-chan time.Time = nil
@@ -90,6 +99,13 @@ LOOP:
 }
 
 func (d *device) onInvoke(req *sotReq) bool {
+	if req.tp != srtPollStart {
+		d.zapt.Infof("hs=%d,rid=%d,type=%d,code=%d,timeout=%d",
+			req.req.Hs(), req.req.Id(),
+			req.req.Type(), req.req.Code(),
+			req.req.Timeout())
+	}
+
 	d.invokeMeta(req)
 
 	if req.meta.ivx&invokeCI != 0 {
@@ -117,6 +133,17 @@ func (d *device) onInvoke(req *sotReq) bool {
 }
 
 func (d *device) onInvokeRet(req *sotReq) {
+	if req.tp != srtPollComplete {
+		rret := 0
+		if req.meta.rsp != nil {
+			rret = int(req.meta.rsp.Ret())
+		}
+		d.zapt.Infof("hs=%d,rid=%d,type=%d,code=%d,ret=%d,rspret=%d",
+			req.req.Hs(), req.req.Id(),
+			req.req.Type(), req.req.Code(),
+			req.meta.ret, rret)
+	}
+
 	if req.meta.ivx&invokeDF != 0 {
 		d.curreq = nil
 		d.tasks.Remove(d.tasks.Front())
@@ -135,6 +162,8 @@ func (d *device) onInvokeRet(req *sotReq) {
 }
 
 func (d *device) onEvtPost(req *sotReq) {
+	d.zapt.Infof("type=%d,code=%d", req.evt.Type(), req.evt.Code())
+
 	ercv, ehsu := d.dev.OnEvt(d.pollc, req.evt)
 
 	for seq := range d.seqs {

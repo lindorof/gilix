@@ -1,11 +1,13 @@
 package ws
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/lindorof/gilix/acp"
 	"github.com/lindorof/gilix/util"
 
 	"context"
-	"log"
 	"net/http"
 
 	"github.com/gorilla/websocket"
@@ -19,6 +21,7 @@ type wsServer struct {
 	handler  *http.ServeMux
 	server   *http.Server
 
+	zapt    *util.Zapt
 	seqHook acp.SeqHook
 }
 
@@ -50,7 +53,10 @@ func CreateServer(sot interface{}, addr string, url ...string) *wsServer {
 		Handler: srv.handler,
 	}
 
-	log.Printf("[%p] CreateServer\n", srv)
+	mod := fmt.Sprintf("gilix/acpws-%s", strings.ReplaceAll(addr, ":", "-"))
+	srv.zapt = util.ZaptByCfg(mod, "wsServer")
+	srv.zapt.Infof("[%p] CreateServer [%s]", srv, addr)
+
 	return srv
 }
 
@@ -59,24 +65,24 @@ func (srv *wsServer) SetSeqHook(sh acp.SeqHook) {
 }
 
 func (srv *wsServer) LoopSync() {
-	log.Printf("[%p] server.ListenAndServe begin\n", srv)
+	srv.zapt.Infof("[%p] server.ListenAndServe begin", srv)
 	err := srv.server.ListenAndServe()
-	log.Printf("[%p] server.ListenAndServe end [%v]\n", srv, err)
+	srv.zapt.Infof("[%p] server.ListenAndServe end [%v]", srv, err)
 
 	srv.cnnSyncer.WaitRelease(util.SyncerWaitModeCancel)
-	log.Printf("[%p] srv.cnnSyncer.SyncerWaitModeCancel return\n", srv)
+	srv.zapt.Infof("[%p] srv.cnnSyncer.SyncerWaitModeCancel end", srv)
 }
 
 func (srv *wsServer) LoopBreak() {
-	log.Printf("[%p] server.Shutdown begin\n", srv)
+	srv.zapt.Infof("[%p] server.Shutdown begin", srv)
 	err := srv.server.Shutdown(context.Background())
-	log.Printf("[%p] server.Shutdown end [%v]\n", srv, err)
+	srv.zapt.Infof("[%p] server.Shutdown end [%v]", srv, err)
 }
 
 func (srv *wsServer) wsHandler(w http.ResponseWriter, r *http.Request) {
 	cnn, err := srv.upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Printf("[%p] [%p] wsUpgrade : %s\n", srv, cnn, err.Error())
+		srv.zapt.Infof("[%p] [%p] wsUpgrade : %s", srv, cnn, err.Error())
 		return
 	}
 	defer cnn.Close()
@@ -89,9 +95,10 @@ func (srv *wsServer) wsHandler(w http.ResponseWriter, r *http.Request) {
 		for {
 			msgType, msg, err := cnn.ReadMessage()
 			if err != nil {
-				//log.Printf("[%p] [%p] cnn.ReadMessage : %s\n", srv, cnn, err.Error())
+				srv.zapt.Errorf("[%p] [%p] cnn.ReadMessage err : %s", srv, cnn, err.Error())
 				return
 			}
+			srv.zapt.Debugf("[%p] [%p] cnn.ReadMessage : [%d]%s", srv, cnn, msgType, string(msg))
 			switch {
 			case msgType == websocket.CloseMessage:
 				return
@@ -104,11 +111,12 @@ func (srv *wsServer) wsHandler(w http.ResponseWriter, r *http.Request) {
 	fwriter := func() {
 		for msg := range chw {
 			if msg == nil {
-				//log.Printf("[%p] [%p] cnn.chw.PeekMessage : nil\n", srv, cnn)
+				srv.zapt.Infof("[%p] [%p] cnn.chw.PeekMessage : nil to exit", srv, cnn)
 				return
 			}
+			srv.zapt.Debugf("[%p] [%p] cnn.chw.PeekMessage : %s", srv, cnn, string(msg))
 			if err := cnn.WriteMessage(websocket.TextMessage, msg); err != nil {
-				log.Printf("[%p] [%p] cnn.WriteMessage : %s\n", srv, cnn, err.Error())
+				srv.zapt.Errorf("[%p] [%p] cnn.WriteMessage err : %s", srv, cnn, err.Error())
 				return
 			}
 		}
