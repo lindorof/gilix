@@ -19,7 +19,7 @@ func (t *eRcvHsId) Id() gilix.ID {
 func (d *device) erhi(ercv gilix.ERCV, ehsu gilix.EHSU, seq *session) *eRcvHsId {
 	t := &eRcvHsId{}
 
-	if ercv == gilix.ERCV_CURRENT && d.curivk != nil && d.curivk.req.seq == seq {
+	if ercv == gilix.ERCV_CURRENT && d.curreq != nil && d.curreq.seq == seq {
 		t.rcv = seq
 	}
 	if ercv == gilix.ERCV_LOCKER && d.curlck == seq {
@@ -29,9 +29,9 @@ func (d *device) erhi(ercv gilix.ERCV, ehsu gilix.EHSU, seq *session) *eRcvHsId 
 		t.rcv = seq
 	}
 
-	if ehsu == gilix.ERCV_CURRENT && d.curivk != nil && d.curivk.req.req != nil {
-		t.hs = d.curivk.req.req.Hs()
-		t.id = d.curivk.req.req.Id()
+	if ehsu == gilix.ERCV_CURRENT && d.curreq != nil && d.curreq.req != nil {
+		t.hs = d.curreq.req.Hs()
+		t.id = d.curreq.req.Id()
 	}
 	if ehsu == gilix.ERCV_LOCKER && d.curlck != nil {
 		t.hs = d.curlck.hs

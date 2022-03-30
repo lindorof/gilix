@@ -16,11 +16,6 @@ const (
 	invokeDF = 0x010000
 )
 
-type invokeCur struct {
-	req  *sotReq
-	done chan bool
-}
-
 type invokeMeta struct {
 	ivx int
 	ivk func()

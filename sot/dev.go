@@ -2,6 +2,7 @@ package sot
 
 import (
 	"container/list"
+	"sync"
 	"time"
 
 	"github.com/lindorof/gilix"
@@ -20,7 +21,8 @@ type device struct {
 	polls []gilix.Callee
 	pollc gilix.PollCache
 
-	curivk  *invokeCur
+	currwg  sync.WaitGroup
+	curreq  *sotReq
 	curlck  *session
 	curlcki gilix.ID
 }
@@ -83,9 +85,7 @@ LOOP:
 	if ticker != nil {
 		ticker.Stop()
 	}
-	if d.curivk != nil {
-		<-d.curivk.done
-	}
+	d.currwg.Wait()
 	gilix.CBS.DevFini(d.dev)
 }
 
@@ -103,7 +103,7 @@ func (d *device) onInvoke(req *sotReq) bool {
 		return true
 	}
 	if req.meta.ivx&invokePL != 0 {
-		if d.curivk != nil {
+		if d.curreq != nil {
 			return false
 		}
 	}
@@ -118,7 +118,7 @@ func (d *device) onInvoke(req *sotReq) bool {
 
 func (d *device) onInvokeRet(req *sotReq) {
 	if req.meta.ivx&invokeDF != 0 {
-		d.curivk = nil
+		d.curreq = nil
 		d.tasks.Remove(d.tasks.Front())
 		d.taskg()
 	}
@@ -151,20 +151,18 @@ func (d *device) onEvtPost(req *sotReq) {
 }
 
 func (d *device) taskg() {
-	if d.curivk != nil || d.tasks.Len() <= 0 {
+	if d.curreq != nil || d.tasks.Len() <= 0 {
 		return
 	}
-	d.curivk = &invokeCur{
-		req:  d.tasks.Front().Value.(*sotReq),
-		done: make(chan bool, 1),
-	}
+	d.curreq = d.tasks.Front().Value.(*sotReq)
 	go func() {
-		d.curivk.req.meta.ivk()
+		d.currwg.Add(1)
 
-		d.curivk.req.tpr()
-		d.putq(d.curivk.req)
+		d.curreq.meta.ivk()
+		d.curreq.tpr()
+		d.putq(d.curreq)
 
-		d.curivk.done <- true
+		d.currwg.Done()
 	}()
 }
 
