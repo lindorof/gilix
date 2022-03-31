@@ -9,14 +9,7 @@ import (
 )
 
 func init() {
-	se := &sotEngine{}
-	se.devr = createDevRep(se)
-	se.breaker = make(chan bool, 1)
-	util.CreateSyncerGroup(context.Background(), &se.acpSyncer, &se.devrSyncer, &se.devsSyncer)
-
-	se.zapt = util.ZaptByCfg("gilix/sotEngine", "sot")
-
-	gilix.CPS = se
+	gilix.NewCPS = newSotEngine
 }
 
 type sotEngine struct {
@@ -27,6 +20,16 @@ type sotEngine struct {
 	devsSyncer *util.Syncer
 
 	zapt *util.Zapt
+}
+
+func newSotEngine() gilix.Xcps {
+	se := &sotEngine{}
+	se.devr = createDevRep(se)
+	se.breaker = make(chan bool, 1)
+	util.CreateSyncerGroup(context.Background(), &se.acpSyncer, &se.devrSyncer, &se.devsSyncer)
+
+	se.zapt = util.ZaptByCfg("gilix/sotEngine", "sot")
+	return se
 }
 
 func (se *sotEngine) SotLoopSync() {

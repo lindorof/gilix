@@ -14,4 +14,4 @@ type Xcps interface {
 }
 
 // CPS Getter
-var CPS Xcps = nil
+var NewCPS func() Xcps = nil

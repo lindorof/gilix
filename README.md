@@ -30,15 +30,21 @@
 
 2. implement interfaces of cbs.go , such as ```Msg``` , ```Dev``` , ```Xcbs``` ...
 
-3. ```import _ "github.com/lindorof/gilix/sot"``` to Initialize ```Xcps``` automatically
+3. ```import _ "github.com/lindorof/gilix/sot"``` to Initialize func ```NewCPS``` automatically
 
-4. start the sot loop 
+4. create Xcps
+   
+   ```go
+   cps := gilix.NewCPS()
+   ```
+
+5. start the sot loop 
 
     ```go
-    gilix.Xcps.SotLoopSync()
+    cps.SotLoopSync()
     ```
 
-5. create acceptor as needed 
+6. create acceptor as needed 
 
     ```go
     // ws
@@ -54,19 +60,19 @@
     acceptor := http.CreateServer(para)
     ```
 
-6. submit acceptors to sot
+7. submit acceptors to sot
 
     ```go
-    gilix.Xcps.SubmitAcp(acceptor)
+    cps.SubmitAcp(acceptor)
     ```
 
-7. stop the sot loop on exit
+8. stop the sot loop on exit
 
     ```go
-    gilix.Xcps.SotLoopBreak()
+    cps.SotLoopBreak()
     ```
 
-8. for simplicity, recommend to use syncer
+9.  for simplicity, recommend to use syncer
 
     ```go
     import "github.com/lindorof/gilix/util"
@@ -76,16 +82,18 @@
     
     // sync mode, returned when ctx cancelled
     syncer.Sync(
-    	gilix.Xcps.SotLoopSync(),
-    	gilix.Xcps.SotLoopBreak())
+    	cps.SotLoopSync(),
+    	cps.SotLoopBreak())
     
     // async mode, returned immediately
     syncer.Async(
-    	gilix.Xcps.SotLoopSync(),
-    	gilix.Xcps.SotLoopBreak())
+    	cps.SotLoopSync(),
+    	cps.SotLoopBreak())
     
     // for async mode, need to cancel and wait on exit
-    syncer.WaitRelease(util.SYNCER_WAIT_MODE_CANCEL)
+    syncer.WaitRelease(util.SyncerWaitModeCancel)
+    // or just wait
+    syncer.WaitRelease(util.SyncerWaitModeIdle)
     ```
 
 ### RDC
@@ -111,8 +119,6 @@ ret, err := caller.Invoke("ReadTrack", in, out)
 // destroy caller
 caller.Fini()
 ```
-
-
 
 ---
 
