@@ -1,5 +1,7 @@
 # gilix
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/lindorof/gilix.svg)](https://pkg.go.dev/github.com/lindorof/gilix)
+
 ## 介绍
 基于 go 开发的「Service of Things」平台
 
