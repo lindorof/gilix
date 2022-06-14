@@ -58,7 +58,7 @@ func (d *device) loopSync() {
 
 	var ticker *time.Ticker = nil
 	var pollt <-chan time.Time = nil
-	if d.polli > 0 {
+	if d.polli > 0 && len(d.polls) > 0 {
 		ticker = time.NewTicker(time.Millisecond * time.Duration(d.polli))
 		pollt = ticker.C
 	}
