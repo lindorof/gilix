@@ -41,8 +41,8 @@ func createDev(se *sotEngine, phy string) *device {
 		pollb: true,
 	}
 
-	mod := fmt.Sprintf("gilix/sotDev-%s", phy)
-	d.zapt = util.ZaptByCfg(mod, phy)
+	mod := fmt.Sprintf("sotDev-%s", phy)
+	d.zapt = util.ZaptByCfg(0, mod, phy)
 
 	se.devsSyncer.Async(d.loopSync, func() { d.reqs <- nil })
 	return d

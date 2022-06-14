@@ -30,8 +30,8 @@ func CreateServer(sot interface{}, addr string) *tcpServer {
 		cnnSyncer: util.CreateSyncer(context.Background()),
 	}
 
-	mod := fmt.Sprintf("gilix/acptcp-%s", strings.ReplaceAll(addr, ":", "-"))
-	srv.zapt = util.ZaptByCfg(mod, "tcpServer")
+	mod := fmt.Sprintf("acptcp-%s", strings.ReplaceAll(addr, ":", "-"))
+	srv.zapt = util.ZaptByCfg(0, mod, "tcpServer")
 	srv.zapt.Infof("[%p] CreateServer [%s]", srv, addr)
 
 	return srv

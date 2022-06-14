@@ -40,8 +40,8 @@ func CreateCaller(addr string, dialdt time.Duration) *tcpCaller {
 		dialdt: dialdt,
 	}
 
-	mod := fmt.Sprintf("gilix/rdctcp-%s", strings.ReplaceAll(addr, ":", "-"))
-	caller.zapt = util.ZaptByCfg(mod, "tcpCaller")
+	mod := fmt.Sprintf("rdctcp-%s", strings.ReplaceAll(addr, ":", "-"))
+	caller.zapt = util.ZaptByCfg(0, mod, "tcpCaller")
 	caller.zapt.Infof("[%p] CreateCaller [%s][dialdt:%d]", caller, addr, dialdt)
 
 	go caller.loop()

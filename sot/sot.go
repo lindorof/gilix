@@ -28,7 +28,7 @@ func newSotEngine() gilix.Xcps {
 	se.breaker = make(chan bool, 1)
 	util.CreateSyncerGroup(context.Background(), &se.acpSyncer, &se.devrSyncer, &se.devsSyncer)
 
-	se.zapt = util.ZaptByCfg("gilix/sotEngine", "sot")
+	se.zapt = util.ZaptByCfg(0, "sotEngine", "sot")
 	return se
 }
 

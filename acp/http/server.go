@@ -45,8 +45,8 @@ func CreateServer(sot interface{}, addr string, idlet time.Duration, url ...stri
 		IdleTimeout: idlet,
 	}
 
-	mod := fmt.Sprintf("gilix/acphttp-%s", strings.ReplaceAll(addr, ":", "-"))
-	srv.zapt = util.ZaptByCfg(mod, "httpServer")
+	mod := fmt.Sprintf("acphttp-%s", strings.ReplaceAll(addr, ":", "-"))
+	srv.zapt = util.ZaptByCfg(0, mod, "httpServer")
 	srv.zapt.Infof("[%p] CreateServer [%s][idlet:%d]", srv, addr, idlet)
 
 	return srv

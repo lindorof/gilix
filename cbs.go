@@ -132,7 +132,7 @@ type Xcbs interface {
 	DevInit(phy string, dc DevCp) Dev
 	DevFini(Dev)
 
-	ZaptCfg() (path string, mode string, purge int, lelvel string)
+	ZaptCfg(category int) (path string, categoryName string, mode string, purge int, lelvel string)
 }
 
 // CBS Setter

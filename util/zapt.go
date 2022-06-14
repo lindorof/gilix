@@ -29,8 +29,9 @@ type Zapt struct {
 	log *zap.SugaredLogger
 }
 
-func ZaptByCfg(mod string, file string) *Zapt {
-	path, mode, purge, lelvel := gilix.CBS.ZaptCfg()
+func ZaptByCfg(category int, mod string, file string) *Zapt {
+	path, categoryName, mode, purge, lelvel := gilix.CBS.ZaptCfg(category)
+	mod = fmt.Sprintf("%s/%s", categoryName, mod)
 	return CreateZapt(path, mod, file, mode, purge, lelvel)
 }
 

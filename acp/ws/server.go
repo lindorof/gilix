@@ -53,8 +53,8 @@ func CreateServer(sot interface{}, addr string, url ...string) *wsServer {
 		Handler: srv.handler,
 	}
 
-	mod := fmt.Sprintf("gilix/acpws-%s", strings.ReplaceAll(addr, ":", "-"))
-	srv.zapt = util.ZaptByCfg(mod, "wsServer")
+	mod := fmt.Sprintf("acpws-%s", strings.ReplaceAll(addr, ":", "-"))
+	srv.zapt = util.ZaptByCfg(0, mod, "wsServer")
 	srv.zapt.Infof("[%p] CreateServer [%s]", srv, addr)
 
 	return srv
