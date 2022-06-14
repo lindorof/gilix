@@ -166,7 +166,9 @@ func (d *device) invoke_poll(req *sotReq) {
 func (d *device) poll() gilix.PollCache {
 	pc := make(gilix.PollCache, len(d.polls))
 	for i, cee := range d.polls {
-		if cee != nil {
+		if cee == nil {
+			pc[i] = nil
+		} else {
 			pc[i] = cee(context.Background(), nil)
 		}
 	}
