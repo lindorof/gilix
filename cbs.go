@@ -115,6 +115,7 @@ type Dev interface {
 	OnEvt(cur PollCache, e Evt) (ERCV, EHSU)
 	OnLockTry()
 	PollChange(old PollCache, new PollCache)
+	EvtFilter(u Usr, e Evt) bool
 }
 
 /* ********************************************************** */

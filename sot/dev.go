@@ -167,6 +167,11 @@ func (d *device) onEvtPost(req *sotReq) {
 	ercv, ehsu := d.dev.OnEvt(d.pollc, req.evt)
 
 	for seq := range d.seqs {
+		sent := d.dev.EvtFilter(seq.usr, req.evt)
+		if sent == false {
+			continue
+		}
+
 		erhi := d.erhi(ercv, ehsu, seq)
 		if erhi.rcv == nil || erhi.hs == gilix.HS_NIL {
 			continue
