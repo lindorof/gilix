@@ -32,10 +32,10 @@ type Zapt struct {
 func ZaptByCfg(category int, mod string, file string) *Zapt {
 	path, categoryName, mode, purge, lelvel := gilix.CBS.ZaptCfg(category)
 	mod = fmt.Sprintf("%s/%s", categoryName, mod)
-	return CreateZapt(path, mod, file, mode, purge, lelvel)
+	return newZapt(path, mod, file, mode, purge, lelvel)
 }
 
-func CreateZapt(path string, mod string, file string, xday string, purge int, level string) *Zapt {
+func newZapt(path string, mod string, file string, xday string, purge int, level string) *Zapt {
 	core := zapcore.NewCore(
 		encoder(),
 		zapcore.AddSync(writer(path, mod, file, str2xday(xday), purge)),

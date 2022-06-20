@@ -39,7 +39,7 @@ func TestMain(m *testing.M) {
 }
 
 func zapt(xday string) *Zapt {
-	return CreateZapt("./gilix_trace", "util/zapt", "zapt", xday, 2, "DEBUG")
+	return newZapt("./gilix_trace", "util/zapt", "zapt", xday, 2, "DEBUG")
 }
 
 func logOne(zapt *Zapt) {
