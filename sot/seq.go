@@ -1,8 +1,6 @@
 package sot
 
 import (
-	"log"
-
 	"github.com/lindorof/gilix"
 	"github.com/lindorof/gilix/acp"
 )
@@ -24,7 +22,6 @@ func newSession(se *sotEngine, acp acp.Acceptor, chw chan<- []byte) *session {
 		chw: chw,
 	}
 
-	log.Printf("[%p] [%p] createSession\n", acp, seq)
 	return seq
 }
 
