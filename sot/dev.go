@@ -48,6 +48,12 @@ func createDev(se *sotEngine, phy string) *device {
 	return d
 }
 
+func (d *device) catch() {
+	if err := recover(); err != nil {
+		d.zapt.Panicf("[!!! panic recover] %v", err)
+	}
+}
+
 func (d *device) loopSync() {
 	d.dev = gilix.CBS.DevInit(d.phy, d)
 	d.polli = d.dev.PollInterval()
@@ -55,6 +61,7 @@ func (d *device) loopSync() {
 	d.pollc = d.poll()
 
 	d.zapt.Infof("dev=%p , polli=%d", d.dev, d.polli)
+	defer d.catch()
 
 	var ticker *time.Ticker = nil
 	var pollt <-chan time.Time = nil
@@ -190,6 +197,8 @@ func (d *device) taskg() {
 	}
 	d.curreq = d.tasks.Front().Value.(*sotReq)
 	go func() {
+		defer d.catch()
+
 		d.currwg.Add(1)
 
 		d.curreq.meta.ivk()
