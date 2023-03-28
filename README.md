@@ -8,7 +8,15 @@
 - 通过 Acceptor 模式与外部交互，支持 tcp/http/ws 等协议
 - 以 plugin 形式嵌入 Things 功能，包括语义解析、Things action 等
 
+## 用途
+
+- 适用于 WOSA/XFS/LFS/PISA/... 及其它自定义协议的 Service Provider 开发
+- 基于 Go 的交叉编译特性，适用于 Windows/Linux/MacOs ，适用于 x86/x64/arm/mips 等多种 CPU 架构
+- 由于 WOSA/XFS/LFS/PISA... 是基于 C 语言 的 API ，因此需要 spi 库来与 gilix 服务通讯，通讯协议由 spi 决定
+- 也可以从 WEB 浏览器通过 JS 以 ws 协议的方式，直接与 gilix 服务通讯
+
 ## 软件架构
+
 ![gilix](readme.png)
 
 - AP 层可使用任何语言直接与 gilix 交互，只要在所支持的传输协议（tcp/http/ws/...）范围内；当然，需要针对 AP 需求来完成相匹配的 plugin 开发
