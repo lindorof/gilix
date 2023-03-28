@@ -15,6 +15,12 @@
 - 由于 WOSA/XFS/LFS/PISA... 是基于 C 语言 的 API ，因此需要 spi 库来与 gilix 服务通讯，通讯协议由 spi 决定
 - 也可以从 WEB 浏览器通过 JS 以 ws 协议的方式，直接与 gilix 服务通讯
 
+## 语义
+
+- 语义解析（通过 tcp/http/ws 收到的数据解析）不包含在 gilix 中
+- 例如 XFS/LFS/PISA  的语义解析，属于业务开发的范畴，可使用 json（推荐）、xml、其它协议等
+- 关于语义解析的已有实现及其它问题可私信
+
 ## 软件架构
 
 ![gilix](readme.png)
@@ -132,4 +138,3 @@ caller.Fini()
 
 ---
 
-*lindorof . 2021.12.24* 
