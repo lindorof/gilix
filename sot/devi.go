@@ -151,8 +151,13 @@ func (d *device) invoke_cmd(req *sotReq, cee gilix.Callee, chk bool, chg bool) {
 		return
 	}
 
+	d.dev.OnCmdStart(&d.pollc)
+
 	req.meta.chg = chg
 	req.meta.rsp = cee(req.ctx, req.req.Para())
+
+	d.dev.OnCmdEnd(&d.pollc)
+
 	if chk {
 		req.meta.pc = d.poll()
 	}
