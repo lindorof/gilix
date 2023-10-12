@@ -116,6 +116,9 @@ type Dev interface {
 	OnLockTry()
 	PollChange(old PollCache, new PollCache)
 	EvtFilter(u Usr, e Evt) bool
+
+	OnCmdStart(*PollCache)
+	OnCmdEnd(*PollCache)
 }
 
 /* ********************************************************** */
